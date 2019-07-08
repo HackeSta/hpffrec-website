@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HPFanfiction Recommender</title>
+    <link rel="stylesheet" href="assets/css/bulma.min.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <script src="https://kit.fontawesome.com/4ac40a47d1.js"></script>
+</head>
+<body>
+  
+    <section class="section">
+        <div class="container">
+          <h1 class="title">
+            HPFanfiction Recommender
+          </h1>
+          <p class="subtitle">
+            Recommendations from <a href="https://reddit.com/r/HPFanfiction" target="_blank">r/HPFanfiction</a>
+          </p>
+        </div>
+      </section>
+      <seciton class="section">
+        <div class="container">
+          <details>
+              <summary><h3 class="title">Stats</h3></summary>
+              <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">Refreshed on</p>
+                      <p id= "latest_utc" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">Total Stories</p>
+                      <p id="total_stories" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">Total Unique Stories</p>
+                      <p id="total_unique_stories" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">Total Unique Authors</p>
+                      <p id="total_unique_authors" class="title">xxx</p>
+                    </div>
+                  </div>
+                </nav>
+                <nav class="level">
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">FanFiction Stories</p>
+                      <p id="ffn_count" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">AO3 Stories</p>
+                      <p id="ao3_count" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">HPFFA Stories</p>
+                      <p id="ffa_count" class="title">xxx</p>
+                    </div>
+                  </div>
+                  <div class="level-item has-text-centered">
+                    <div>
+                      <p class="heading">FictionPress Stories</p>
+                      <p id="fp_count" class="title">xxx</p>
+                    </div>
+                  </div>
+                </nav>
+          </details>
+          <details>
+            <summary>
+              <h3 class="title">Information</h3>
+            </summary>
+            <p class="has-text-justified">HPFanficiton is based on data provided by <a href="https://pushshift.io/">pushshift.io</a>        </p>
+            <p><b>Related Stuff:</b>
+            <ul>
+              <li><a href="https://reddit.com/r/HPFanfiction" target="_blank">r/HPFanfiction</a></li>
+              <li><a href="https://ficrecs.elusiveguy.com/" target="_blank">FicRecs by r/elusiveguy</a></li>
+            </ul>
+            </p>
+          </details>
+        </div>
+      </seciton>
+      <section class="section">
+          <div class="container">
+            <div id="selector1" class="tabs is-centered">
+                <ul>
+                  <li onclick="javascript:loadData(this)" class="is-active"><a>Latest</a></li>
+                  <li onclick="javascript:loadData(this)"><a>Stories</a></li>
+                  <li onclick="javascript:loadData(this)"><a>Authors</a></li>
+                </ul>
+              </div>
+              <div id="selector2" class="tabs is-centered is-hidden">
+                <ul>
+                  <li onclick="javascript:loadData(this)" class="is-active"><a>This Week</a></li>
+                  <li onclick="javascript:loadData(this)"><a>This Month</a></li>
+                  <li onclick="javascript:loadData(this)"><a>This Year</a></li>
+                  <li onclick="javascript:loadData(this)"><a>All Time</a></li>
+                </ul>
+              </div>
+          
+          <div id="data-table">
+              <table class="table is-fullwidth">
+                  <thead>
+                      <tr>
+                      </tr>
+                  </thead>
+                  <tbody>
+
+                  </tbody>
+              </table>
+              <nav class="pagination" role="navigation" aria-label="pagination">
+                    <a onclick="javascript:turnPage(-1);" class="pagination-previous">Previous</a>
+                    <a onclick="javascript:turnPage(1);" class="pagination-next">Next</a>
+                  </nav>
+          </div>
+          
+        </div>
+      </section>
+      <footer class="footer">
+          <div class="content columns">
+            <div class="column">
+                <p>
+                    <a href="https://hackesta.org" target="_blank"><img src="https://hackesta.org/assets/media/logo_main_horizontal.svg" width="200px"/></a>
+                    
+                  </p>
+                  <p class="social-links">
+                      <a href="https://facebook.com/hackesta" target="_blank"><span class="icon"><i class="fab fa-facebook-f"></i></span></a>
+                      <a href="https://twitter.com/HackestaOrg" target="_blank"><span class="icon"><i class="fab fa-twitter"></i></span></a>
+                      <a href="https://instagram.com/hackesta" target="_blank"><span class="icon"><i class="fab fa-instagram"></i></span></a>
+                      <a href="https://github.com/hackesta" target="_blank"><span class="icon"><i class="fab fa-github"></i></span></a>
+                      <a href="https://hackesta.org" target="_blank"><span class="icon"><i class="fas fa-globe-asia"></i></span></a>        
+                  </p>
+            </div>
+            <div class="column">
+              <p><strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a></p>
+              <p>Hosted with <span class="icon has-text-danger"><i class="fas fa-heart"></i></span> on <strong><a href="https://netlify.com" target="_blank">Netlify</a></strong></p>
+            </div>
+
+          </div>
+        </footer>
+    <script src="assets/js/jquery-3.4.1.min.js"></script>
+    <script src="assets/js/index.js"></script>
+</body>
+</html>

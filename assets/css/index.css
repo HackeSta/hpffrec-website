@@ -1,0 +1,16 @@
+details > summary {
+    list-style: none;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .social-links a {
+      color: #111111;
+      text-decoration: none;
+  }
+  .footer {
+      padding: 1rem 1.5rem 1rem;
+  }
