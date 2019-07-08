@@ -109,7 +109,7 @@ function loadStats(){
             $("#"+key).html(stats[key])
         }
         let d =new Date(parseInt(stats.latest_utc)*1000)
-        $("#latest_utc").html(`${d.getDate()}-${d.getMonth()}-${d.getFullYear()}`)
+        $("#latest_utc").html(`${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`)
     });
 }
 
