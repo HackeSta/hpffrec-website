@@ -101,6 +101,11 @@ function turnPage(i){
     loadTable()
 }
 
+function changeLimit(limit){
+    pagination = limit;
+    loadTable();
+}
+
 function loadStats(){
     $.getJSON("/data/stats.json").then(data=>{
         stats = data[0];

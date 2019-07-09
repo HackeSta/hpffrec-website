@@ -111,7 +111,7 @@
               </div>
           
           <div id="data-table">
-              <table class="table is-fullwidth">
+              <table class="table is-fullwidth" style="overflow-x:auto;">
                   <thead>
                       <tr>
                       </tr>
@@ -120,6 +120,11 @@
 
                   </tbody>
               </table>
+              <strong>Load: </strong>
+              <a onclick="javascript:changeLimit(10);">10</a>
+              <a onclick="javascript:changeLimit(20);">20</a>
+              <a onclick="javascript:changeLimit(50);">50</a>
+              <a onclick="javascript:changeLimit(100);">100</a>
               <nav class="pagination" role="navigation" aria-label="pagination">
                     <a onclick="javascript:turnPage(-1);" class="pagination-previous">Previous</a>
                     <a onclick="javascript:turnPage(1);" class="pagination-next">Next</a>
