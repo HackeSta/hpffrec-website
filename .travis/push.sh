@@ -5,7 +5,7 @@ setup_git() {
 }
 
 commit_website_files() {
-  git add /data/*.json
+  git add data/*.json
   git commit --message "[ci skip] Travis build: $TRAVIS_BUILD_NUMBER"
 }
 
