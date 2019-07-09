@@ -6,4 +6,4 @@ PATH = os.environ['DATA_SOURCE']
 for file in files:
     r = requests.get(PATH + file + ".json")
     data = json.loads(r.text)
-    json.dump(data,open("/data/"+file+".json", "w"))
+    json.dump(data,open("data/"+file+".json", "w"))
