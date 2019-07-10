@@ -14,3 +14,7 @@ details > summary {
   .footer {
       padding: 1rem 1.5rem 1rem;
   }
+  td .fas {
+    padding-left: 5px;
+    padding-right: 5px;
+  }

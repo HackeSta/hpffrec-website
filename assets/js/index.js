@@ -34,14 +34,31 @@ function loadLatestTable(){
         
         data = mData.slice(page*pagination,(page+1)*pagination)
         
-        let headers = ["S.No","Story", "Author", "Website"]
+        let headers = ["S.No","Story", "Status", "Words","Rating"]
         $("#data-table thead tr").html(headers.map(el=>{return `<th>${el}</th>`}))
         let rows = data.map((row)=>{
             return `<tr>
                         <td>${mData.indexOf(row)+1}</td>
-                        <td><a href="${row.story_url}" target="_blank">${row.story_name}</a></td>
-                        <td><a href="${row.author_url}" target="_blank">${row.author_name}</a></td>
-                        <td>${row.website}</td>
+                        <td><a href="${row.story_url}" target="_blank">${row.story_name}</a> - <a href="${row.author_url}" target="_blank"><i>${row.author_name}</i></a> [${row.website}]
+                            <p>
+                                ${row.language !== null && `<strong class="fas fa-globe-asia"></strong>${row.language}`}
+                                ${row.genre !== null && `<strong class="fas fa-pen"></strong>${row.genre}`}
+                                ${row.chapters !== null && `<strong class="fas fa-book"></strong>${row.chapters}`}
+                                ${row.reviews !== null && `<strong class="fas fa-comment"></strong>${row.reviews}`}
+                                ${row.favs !== null && `<strong class="fas fa-heart"></strong>${row.favs}`}
+                                ${row.follows !== null && `<strong class="fas fa-bookmark"></strong>${row.follows}`}
+                            </p>
+                            <p>
+                                ${row.published !== null && `<strong class="fas fa-clock"></strong>${getFullDate(row.published)}`}
+                                ${row.updated !== null && `<strong class="fas fa-sync"></strong>${getFullDate(row.updated)}`}
+                            </p>
+                            <p>
+                                ${row.characters!==null && row.characters}
+                            </p>
+                        </td>
+                        <td>${row.status ? row.status : "N/A"}</td>
+                        <td>${row.words ? abbr(row.words,1) : "N/A"}</td>
+                        <td>${row.rated ? row.rated : "N/A"}</td>
                     </tr>`
         })
         $("#data-table tbody").html(rows)
@@ -53,16 +70,35 @@ function loadStoryTable(duration){
     $.getJSON(`/data/stories_top100_${duration}.json`).then((mData) => {
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
         if(page==0) $(".pagination-previous").addClass("is-invisible")
+        
         data = mData.slice(page*pagination,(page+1)*pagination)
-        let headers = ["S.No","Count","Story", "Author", "Website"]
+        
+        let headers = ["S.No","Count","Story", "Status", "Words","Rating"]
         $("#data-table thead tr").html(headers.map(el=>{return `<th>${el}</th>`}))
         let rows = data.map((row)=>{
             return `<tr>
                         <td>${mData.indexOf(row)+1}</td>
-                        <td>${row.count}</td>                        
-                        <td><a href="${row.story_url}" target="_blank">${row.story_name}</a></td>
-                        <td><a href="${row.author_url}" target="_blank">${row.author_name}</a></td>
-                        <td>${row.website}</td>
+                        <td>${row.count}</td>
+                        <td><a href="${row.story_url}" target="_blank">${row.story_name}</a> - <a href="${row.author_url}" target="_blank"><i>${row.author_name}</i></a> [${row.website}]
+                            <p>
+                                ${row.language !== null && `<strong class="fas fa-globe-asia"></strong>${row.language}`}
+                                ${row.genre !== null && `<strong class="fas fa-pen"></strong>${row.genre}`}
+                                ${row.chapters !== null && `<strong class="fas fa-book"></strong>${row.chapters}`}
+                                ${row.reviews !== null && `<strong class="fas fa-comment"></strong>${row.reviews}`}
+                                ${row.favs !== null && `<strong class="fas fa-heart"></strong>${row.favs}`}
+                                ${row.follows !== null && `<strong class="fas fa-bookmark"></strong>${row.follows}`}
+                            </p>
+                            <p>
+                                ${row.published !== null && `<strong class="fas fa-clock"></strong>${getFullDate(row.published)}`}
+                                ${row.updated !== null && `<strong class="fas fa-sync"></strong>${getFullDate(row.updated)}`}
+                            </p>
+                            <p>
+                                ${row.characters!==null && row.characters}
+                            </p>
+                        </td>
+                        <td>${row.status ? row.status : "N/A"}</td>
+                        <td>${row.words ? abbr(row.words,1) : "N/A"}</td>
+                        <td>${row.rated ? row.rated : "N/A"}</td>
                     </tr>`
         })
         $("#data-table tbody").html(rows)
@@ -109,15 +145,53 @@ function changeLimit(limit){
 function loadStats(){
     $.getJSON("/data/stats.json").then(data=>{
         stats = data[0];
-        console.log(stats)
         for(let key of Object.keys(stats)){
             $("#"+key).html(stats[key])
         }
         let d =new Date(parseInt(stats.latest_utc)*1000)
-        $("#latest_utc").html(`${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`)
+        $("#latest_utc").html(`${d.toLocaleString()}`)
+        $("#storydata_perc").html(Math.round(stats['storydata_count']*100/stats['total_unique_stories']*100)/100+"%")
     });
 }
+function getFullDate(date){
+    return new Date(parseInt(date)*1000).toLocaleDateString();
+}
+function abbr(number, decPlaces) {
+    // Source: https://stackoverflow.com/a/2686098/4698800
+    // 2 decimal places => 100, 3 => 1000, etc
+    decPlaces = Math.pow(10,decPlaces);
 
+    // Enumerate number abbreviations
+    var abbrev = [ "k", "m", "b", "t" ];
+
+    // Go through the array backwards, so we do the largest first
+    for (var i=abbrev.length-1; i>=0; i--) {
+
+        // Convert array index to "1000", "1000000", etc
+        var size = Math.pow(10,(i+1)*3);
+
+        // If the number is bigger or equal do the abbreviation
+        if(size <= number) {
+             // Here, we multiply by decPlaces, round, and then divide by decPlaces.
+             // This gives us nice rounding to a particular decimal place.
+             number = Math.round(number*decPlaces/size)/decPlaces;
+
+             // Handle special case where we round up to the next abbreviation
+             if((number == 1000) && (i < abbrev.length - 1)) {
+                 number = 1;
+                 i++;
+             }
+
+             // Add the letter for the abbreviation
+             number += abbrev[i];
+
+             // We are done... stop
+             break;
+        }
+    }
+
+    return number;
+}
 $(document).ready(function(){
     loadStats();
     loadTable();
