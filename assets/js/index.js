@@ -37,23 +37,24 @@ function loadLatestTable(){
         let headers = ["S.No","Story", "Status", "Words","Rating"]
         $("#data-table thead tr").html(headers.map(el=>{return `<th>${el}</th>`}))
         let rows = data.map((row)=>{
+            console.log(row)
             return `<tr>
                         <td>${mData.indexOf(row)+1}</td>
                         <td><a href="${row.story_url}" target="_blank">${row.story_name}</a> - <a href="${row.author_url}" target="_blank"><i>${row.author_name}</i></a> [${row.website}]
                             <p>
-                                ${row.language !== null && `<strong class="fas fa-globe-asia"></strong>${row.language}`}
-                                ${row.genre !== null && `<strong class="fas fa-pen"></strong>${row.genre}`}
-                                ${row.chapters !== null && `<strong class="fas fa-book"></strong>${row.chapters}`}
-                                ${row.reviews !== null && `<strong class="fas fa-comment"></strong>${row.reviews}`}
-                                ${row.favs !== null && `<strong class="fas fa-heart"></strong>${row.favs}`}
-                                ${row.follows !== null && `<strong class="fas fa-bookmark"></strong>${row.follows}`}
+                                ${row.language !== null ? `<span><strong class="fas fa-globe-asia"></strong>${row.language}</span>` : ""}
+                                ${row.genre !== null ? `<span><strong class="fas fa-pen"></strong>${row.genre}</span>`: ""}
+                                ${row.chapters !== null ? `<span><strong class="fas fa-book"></strong>${row.chapters}</span>`: ""}
+                                ${row.reviews !== null ? `<span><strong class="fas fa-comment"></strong>${row.reviews}</span>`: ""}
+                                ${row.favs !== null ? `<span><strong class="fas fa-heart"></strong>${row.favs}</span>`: ""}
+                                ${row.follows !== null ? `<span><strong class="fas fa-bookmark"></strong>${row.follows}</span>`: ""}
                             </p>
                             <p>
-                                ${row.published !== null && `<strong class="fas fa-clock"></strong>${getFullDate(row.published)}`}
-                                ${row.updated !== null && `<strong class="fas fa-sync"></strong>${getFullDate(row.updated)}`}
+                            ${row.published !== null ? `<span><strong class="fas fa-clock"></strong>${getFullDate(row.published)}</span>`: ""}
+                            ${row.updated !== null ? `<span><strong class="fas fa-sync"></strong>${getFullDate(row.updated)}</span>` : ""}
                             </p>
                             <p>
-                                ${row.characters!==null && row.characters}
+                            ${row.characters!==null ? row.characters: ""}
                             </p>
                         </td>
                         <td>${row.status ? row.status : "N/A"}</td>
@@ -81,19 +82,19 @@ function loadStoryTable(duration){
                         <td>${row.count}</td>
                         <td><a href="${row.story_url}" target="_blank">${row.story_name}</a> - <a href="${row.author_url}" target="_blank"><i>${row.author_name}</i></a> [${row.website}]
                             <p>
-                                ${row.language !== null && `<strong class="fas fa-globe-asia"></strong>${row.language}`}
-                                ${row.genre !== null && `<strong class="fas fa-pen"></strong>${row.genre}`}
-                                ${row.chapters !== null && `<strong class="fas fa-book"></strong>${row.chapters}`}
-                                ${row.reviews !== null && `<strong class="fas fa-comment"></strong>${row.reviews}`}
-                                ${row.favs !== null && `<strong class="fas fa-heart"></strong>${row.favs}`}
-                                ${row.follows !== null && `<strong class="fas fa-bookmark"></strong>${row.follows}`}
+                            ${row.language !== null ? `<span><strong class="fas fa-globe-asia"></strong>${row.language}</span>`:""}
+                            ${row.genre !== null ? `<span><strong class="fas fa-pen"></strong>${row.genre}</span>`:""}
+                            ${row.chapters !== null ? `<span><strong class="fas fa-book"></strong>${row.chapters}</span>`:""}
+                            ${row.reviews !== null ? `<span><strong class="fas fa-comment"></strong>${row.reviews}</span>`:""}
+                            ${row.favs !== null ? `<span><strong class="fas fa-heart"></strong>${row.favs}</span>`:""}
+                            ${row.follows !== null ? `<span><strong class="fas fa-bookmark"></strong>${row.follows}</span>`:""}
                             </p>
                             <p>
-                                ${row.published !== null && `<strong class="fas fa-clock"></strong>${getFullDate(row.published)}`}
-                                ${row.updated !== null && `<strong class="fas fa-sync"></strong>${getFullDate(row.updated)}`}
+                            ${row.published !== null ? `<span><strong class="fas fa-clock"></strong>${getFullDate(row.published)}</span>`:""}
+                            ${row.updated !== null ? `<span><strong class="fas fa-sync"></strong>${getFullDate(row.updated)}</span>`:""}
                             </p>
                             <p>
-                                ${row.characters!==null && row.characters}
+                            ${row.characters!==null ? row.characters:""}
                             </p>
                         </td>
                         <td>${row.status ? row.status : "N/A"}</td>
