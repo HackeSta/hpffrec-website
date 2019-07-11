@@ -1,5 +1,9 @@
 let page = 0
 let pagination = 20
+const words_filter_options = {
+    "less": [1000,5000],
+    "greater": [1000,5000,10000,20000,50000,100000,500000]
+}
 function loadData(element){
     emptyTable()
     $(element).addClass("is-active")
@@ -8,6 +12,7 @@ function loadData(element){
 }
 
 function loadTable(){
+    console.log("called")
     let ind1 =  $("#selector1 .is-active").index()
     let ind2 =  $("#selector2 .is-active").index()
     $(".pagination-next").removeClass("is-invisible")
@@ -15,20 +20,24 @@ function loadTable(){
     switch(ind1){
         case 0:
             $("#selector2").addClass("is-hidden")
+            $("#filters").removeClass("is-hidden")
             loadLatestTable();
             break;
         case 1:
             $("#selector2").removeClass("is-hidden")
+            $("#filters").removeClass("is-hidden")
             loadStoryTable($($("#selector2 a")[ind2]).text().replace(" ","").toLowerCase())
             break;
         case 2:
             $("#selector2").removeClass("is-hidden")
+            $("#filters").addClass("is-hidden")
             loadAuthorTable($($("#selector2 a")[ind2]).text().replace(" ","").toLowerCase())
             break
     }
 }
 function loadLatestTable(){
     $.getJSON(`/data/latest.json`).then((mData) => {
+        mData = filterData(mData);
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
         if(page==0) $(".pagination-previous").addClass("is-invisible")
         
@@ -36,8 +45,7 @@ function loadLatestTable(){
         
         let headers = ["S.No","Story", "Status", "Words","Rating"]
         $("#data-table thead tr").html(headers.map(el=>{return `<th>${el}</th>`}))
-        let rows = data.map((row)=>{
-            console.log(row)
+        let rows = data.map((row)=>{            
             return `<tr>
                         <td>${mData.indexOf(row)+1}</td>
                         <td><a href="${row.story_url}" target="_blank">${row.story_name}</a> - <a href="${row.author_url}" target="_blank"><i>${row.author_name}</i></a> [${row.website}]
@@ -69,6 +77,7 @@ function loadLatestTable(){
 
 function loadStoryTable(duration){
     $.getJSON(`/data/stories_top100_${duration}.json`).then((mData) => {
+        mData = filterData(mData);
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
         if(page==0) $(".pagination-previous").addClass("is-invisible")
         
@@ -126,6 +135,77 @@ function loadAuthorTable(duration){
 
     });
 }
+function loadFilters(){
+    
+    status_filters = ["Status: All","Complete","Incomplete"]
+    rating_filters = ["Rating: All","Fiction K","Fiction K+","Fiction T","Fiction M"]
+    $.getJSON("/data/filters.json",function(data){
+        genre_filters = ["Genre: All", ...data['filters']]
+        for(let filter of genre_filters){
+            $("#filter_genre").append(`<option>${filter}</option>`)
+        }
+    })
+    words_filters = ["<option>Words: All</option>",
+    ...words_filter_options['less'].map(option => {
+        return `<option>< ${abbr(option,1)}</option>`
+    }),
+    ...words_filter_options['greater'].map(option => {
+        return `<option>> ${abbr(option,1)}</option>`
+    })
+    ]
+    console.log(words_filters)
+    for(let filter of words_filters){
+        $("#filter_words").append(filter)
+    }
+    for(let filter of status_filters){
+        $("#filter_status").append(`<option>${filter}</option>`)
+    }
+    for(let filter of rating_filters){
+        $("#filter_rating").append(`<option>${filter}</option>`)
+    }
+    $("#filters select").on('change',function(){
+        loadTable();
+    })
+}
+
+function filterData(data){
+    returnData = []
+    filters = []
+    $("#filters select").each((value,s)=>{
+        filters.push({
+            "index":s.selectedIndex,
+            "option":s.selectedOptions[0].innerText
+        })
+    });
+    for(let row of data){
+        if(checkFilterWords(row,filters) && checkFilterGenre(row,filters) && checkFilterRating(row,filters) && checkFilterStatus(row,filters)) {
+            returnData.push(row)
+        }
+    }
+    return returnData
+}
+
+function checkFilterWords(data,filters){
+    if(filters[0].index !== 0 && !data.words) return false
+    if((filters[0].index == 1 || filters[0].index == 2) && data.words > parseInt(words_filter_options['less'][filters[0].index-1])) return false
+    if(filters[0].index > 2 && data.words < parseInt(words_filter_options['greater'][filters[0].index-3])) return false
+    return true
+}
+function checkFilterGenre(data,filters){
+    if(filters[1].index !== 0 && !data.genre) return false
+    if(filters[1].index > 0 && !data.genre.includes(filters[1].option)) return false
+    return true
+}
+function checkFilterRating(data,filters){
+    if(filters[2].index !== 0 && !data.rated) return false
+    if(filters[2].index > 0 && data.rated !== filters[2].option) return false
+    return true
+}
+function checkFilterStatus(data,filters){
+    if(filters[3].index === 1 && !data.status) return false
+    if(filters[3].index === 2 && data.status) return false
+    return true
+}
 
 function emptyTable(){
     $("#data-table thead tr").html("")
@@ -154,6 +234,8 @@ function loadStats(){
         $("#storydata_perc").html(Math.round(stats['storydata_count']*100/stats['total_unique_stories']*100)/100+"%")
     });
 }
+
+
 function getFullDate(date){
     return new Date(parseInt(date)*1000).toLocaleDateString();
 }
@@ -196,4 +278,5 @@ function abbr(number, decPlaces) {
 $(document).ready(function(){
     loadStats();
     loadTable();
+    loadFilters();
 })
