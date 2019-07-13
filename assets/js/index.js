@@ -73,7 +73,7 @@ async function loadLatestTable(){
                             ${row.updated !== null ? `<span><strong class="fas fa-sync"></strong>${getFullDate(row.updated)}</span>` : ""}
                             </p>
                             <p>
-                            ${row.characters!==null ? row.characters: ""}
+                            ${row.characters!==null ? row.characters.replace(/</g, '&lt;').replace(/>/g, '&gt;'): ""}
                             </p>
                         </td>
                         <td>${row.status ? row.status : "N/A"}</td>
@@ -120,7 +120,7 @@ async function loadStoryTable(duration){
                             ${row.updated !== null ? `<span><strong class="fas fa-sync"></strong>${getFullDate(row.updated)}</span>`:""}
                             </p>
                             <p>
-                            ${row.characters!==null ? row.characters:""}
+                            ${row.characters!==null ? row.characters.replace(/</g, '&lt;').replace(/>/g, '&gt;'):""}
                             </p>
                         </td>
                         <td>${row.status ? row.status : "N/A"}</td>
