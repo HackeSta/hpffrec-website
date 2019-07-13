@@ -12,7 +12,8 @@ function loadData(element){
 }
 
 function loadTable(){
-    console.log("called")
+    progressBarVisible(true)
+    $("#nodata-error").addClass("is-hidden")    
     let ind1 =  $("#selector1 .is-active").index()
     let ind2 =  $("#selector2 .is-active").index()
     $(".pagination-next").removeClass("is-invisible")
@@ -34,9 +35,19 @@ function loadTable(){
             loadAuthorTable($($("#selector2 a")[ind2]).text().replace(" ","").toLowerCase())
             break
     }
+    
 }
-function loadLatestTable(){
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
+    }
+  }
+async function loadLatestTable(){
     $.getJSON(`/data/latest.json`).then((mData) => {
+        
         mData = filterData(mData);
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
         if(page==0) $(".pagination-previous").addClass("is-invisible")
@@ -70,12 +81,18 @@ function loadLatestTable(){
                         <td>${row.rated ? row.rated : "N/A"}</td>
                     </tr>`
         })
+        progressBarVisible(false)
+
         $("#data-table tbody").html(rows)
+
+        if(rows.length === 0){
+            $("#nodata-error").removeClass("is-hidden")
+        }
 
     });
 }
 
-function loadStoryTable(duration){
+async function loadStoryTable(duration){
     $.getJSON(`/data/stories_top100_${duration}.json`).then((mData) => {
         mData = filterData(mData);
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
@@ -111,12 +128,16 @@ function loadStoryTable(duration){
                         <td>${row.rated ? row.rated : "N/A"}</td>
                     </tr>`
         })
-        $("#data-table tbody").html(rows)
+        progressBarVisible(false)
 
+        $("#data-table tbody").html(rows)
+        if(rows.length === 0){
+            $("#nodata-error").removeClass("is-hidden")
+        }
     });
 }
 
-function loadAuthorTable(duration){
+async function loadAuthorTable(duration){
     $.getJSON(`/data/authors_top100_${duration}.json`).then((mData) => {
         if(pagination*(page+1) >= mData.length) $(".pagination-next").addClass("is-invisible")
         if(page==0) $(".pagination-previous").addClass("is-invisible")
@@ -131,14 +152,18 @@ function loadAuthorTable(duration){
                         <td>${row.website}</td>
                     </tr>`
         })
+        progressBarVisible(false)
         $("#data-table tbody").html(rows)
-
+        if(rows.length === 0){
+            $("#nodata-error").removeClass("is-hidden")
+        }
     });
 }
 function loadFilters(){
     
     status_filters = ["Status: All","Complete","Incomplete"]
     rating_filters = ["Rating: All","Fiction K","Fiction K+","Fiction T","Fiction M"]
+    website_filters = ["Website: All","fanfiction.net","archiveofourown.org","fictionpress.com","hpfanficarchive.com"]
     $.getJSON("/data/filters.json",function(data){
         genre_filters = ["Genre: All", ...data['filters']]
         for(let filter of genre_filters){
@@ -153,7 +178,6 @@ function loadFilters(){
         return `<option>> ${abbr(option,1)}</option>`
     })
     ]
-    console.log(words_filters)
     for(let filter of words_filters){
         $("#filter_words").append(filter)
     }
@@ -162,6 +186,9 @@ function loadFilters(){
     }
     for(let filter of rating_filters){
         $("#filter_rating").append(`<option>${filter}</option>`)
+    }
+    for(let filter of website_filters){
+        $("#filter_website").append(`<option>${filter}</option>`)
     }
     $("#filters select").on('change',function(){
         loadTable();
@@ -178,7 +205,11 @@ function filterData(data){
         })
     });
     for(let row of data){
-        if(checkFilterWords(row,filters) && checkFilterGenre(row,filters) && checkFilterRating(row,filters) && checkFilterStatus(row,filters)) {
+        if(checkFilterWords(row,filters) && 
+        checkFilterGenre(row,filters) && 
+        checkFilterRating(row,filters) && 
+        checkFilterStatus(row,filters) &&
+        checkFilterWebsite(row,filters)) {
             returnData.push(row)
         }
     }
@@ -206,7 +237,11 @@ function checkFilterStatus(data,filters){
     if(filters[3].index === 2 && data.status) return false
     return true
 }
-
+function checkFilterWebsite(data,filters){
+    if(filters[4].index !== 0 && !data.website) return false
+    if(filters[4].index > 0 && data.website !== filters[4].option) return false
+    return true
+}
 function emptyTable(){
     $("#data-table thead tr").html("")
     $("#data-table tbody").html("")
@@ -274,6 +309,15 @@ function abbr(number, decPlaces) {
     }
 
     return number;
+}
+function progressBarVisible(visible){
+    progress = $("#data-table progress")
+    if(visible){
+        progress.removeClass("is-hidden")
+    }
+    else{
+        progress.addClass("is-hidden")
+    }
 }
 $(document).ready(function(){
     loadStats();
