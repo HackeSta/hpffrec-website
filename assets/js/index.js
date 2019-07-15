@@ -191,6 +191,7 @@ function loadFilters(){
         $("#filter_website").append(`<option>${filter}</option>`)
     }
     $("#filters select").on('change',function(){
+        page = 0;
         loadTable();
     })
 }
@@ -317,6 +318,16 @@ function progressBarVisible(visible){
     }
     else{
         progress.addClass("is-hidden")
+    }
+}
+
+function messageVisible(elem){
+    message = $(elem).closest("article").children(".message-body")
+    if(message.hasClass("is-hidden")){
+        message.removeClass("is-hidden")
+    }
+    else {
+        message.addClass("is-hidden")
     }
 }
 $(document).ready(function(){
