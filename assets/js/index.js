@@ -265,7 +265,7 @@ function loadStats(){
         for(let key of Object.keys(stats)){
             $("#"+key).html(stats[key])
         }
-        let d =new Date(parseInt(stats.latest_utc)*1000)
+        let d =new Date(parseInt(stats.latest_run)*1000)
         $("#latest_utc").html(`${d.toLocaleString()}`)
         $("#storydata_perc").html(Math.round(stats['storydata_count']*100/stats['total_unique_stories']*100)/100+"%")
     });
