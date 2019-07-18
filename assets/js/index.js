@@ -164,11 +164,21 @@ function loadFilters(){
     status_filters = ["Status: All","Complete","Incomplete"]
     rating_filters = ["Rating: All","Fiction K","Fiction K+","Fiction T","Fiction M"]
     website_filters = ["Website: All","fanfiction.net","archiveofourown.org","fictionpress.com","hpfanficarchive.com"]
-    $.getJSON("/data/filters.json",function(data){
-        genre_filters = ["Genre: All", ...data['filters']]
+    let character_data;
+    $.getJSON("/data/genre_filters.json",function(data){
+        genre_filters = ["Genre: All", ...data]
         for(let filter of genre_filters){
             $("#filter_genre").append(`<option>${filter}</option>`)
         }
+    })
+    $.getJSON("/data/character_filters.json",function(data){
+        character_data = data;
+        character_filters = ["Pairing: All", ...Object.keys(data)]
+        for(let filter of character_filters){
+            $("#filter_pairing1").append(`<option>${filter}</option>`)
+        }
+        $("#filter_pairing2").append(`<option>${" "}</option>`)
+
     })
     words_filters = ["<option>Words: All</option>",
     ...words_filter_options['less'].map(option => {
@@ -190,9 +200,20 @@ function loadFilters(){
     for(let filter of website_filters){
         $("#filter_website").append(`<option>${filter}</option>`)
     }
-    $("#filters select").on('change',function(){
+    $("#filters .change").on('change',function(){
         page = 0;
         loadTable();
+    })
+    $("#filter_pairing1").on('change',function(){
+        select = $("#filter_pairing1")[0];
+        $("#filter_pairing2").text("")
+        console.log(select)
+        if(select.selectedIndex > 0){
+            key = select.selectedOptions[0].innerText
+            for(let character of ["Pairing: All", ...character_data[key]]){
+                $("#filter_pairing2").append(`<option>${character}</option>`)
+            }
+        }
     })
 }
 
@@ -208,6 +229,7 @@ function filterData(data){
     for(let row of data){
         if(checkFilterWords(row,filters) && 
         checkFilterGenre(row,filters) && 
+        checkFilterPairing(row,filters) &&
         checkFilterRating(row,filters) && 
         checkFilterStatus(row,filters) &&
         checkFilterWebsite(row,filters)) {
@@ -228,19 +250,39 @@ function checkFilterGenre(data,filters){
     if(filters[1].index > 0 && !data.genre.includes(filters[1].option)) return false
     return true
 }
+function checkFilterPairing(data,filters){
+    if(filters[2].index === 0) return true;
+    if(data.characters === null) return false;
+    if(data.characters.includes("<") && data.characters.includes(">")){
+    pairings = data.characters.substring(data.characters.indexOf("<")+1,data.characters.indexOf(">"))
+    if(pairings.length > 1){
+        if(filters[2].index > 0 && pairings.includes(filters[2].option)){
+            if(filters[3].index > 0){
+                if(pairings.includes(filters[3].option)){
+                    return true
+                }
+            }
+            else{
+                return true;
+            }        
+        }
+    }
+    }
+    return false;
+}
 function checkFilterRating(data,filters){
-    if(filters[2].index !== 0 && !data.rated) return false
-    if(filters[2].index > 0 && data.rated !== filters[2].option) return false
+    if(filters[4].index !== 0 && !data.rated) return false
+    if(filters[4].index > 0 && data.rated !== filters[4].option) return false
     return true
 }
 function checkFilterStatus(data,filters){
-    if(filters[3].index === 1 && !data.status) return false
-    if(filters[3].index === 2 && data.status) return false
+    if(filters[5].index === 1 && !data.status) return false
+    if(filters[5].index === 2 && data.status) return false
     return true
 }
 function checkFilterWebsite(data,filters){
-    if(filters[4].index !== 0 && !data.website) return false
-    if(filters[4].index > 0 && data.website !== filters[4].option) return false
+    if(filters[6].index !== 0 && !data.website) return false
+    if(filters[6].index > 0 && data.website !== filters[6].option) return false
     return true
 }
 function emptyTable(){
