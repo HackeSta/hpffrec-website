@@ -14,3 +14,4 @@ deploy:
   auth: $NETLIFY_AUTH
   dir: .
   edge: true # opt in to dpl v2
+  prod: true
